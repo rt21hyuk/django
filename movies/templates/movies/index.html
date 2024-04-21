@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  {% block content %}
+  <div>
+    <h2>메인 페이지</h2>
+    <a href="{% url "movies:create" %}">[생성하기]</a>
+  </div>
+  {% if movies|length == 0 %} 아직 게시글이 없습니다.
+  {% else %}
+    {% for movie in movies %}
+      <p>영화번호 : {{ movie.pk }}</p>
+      <p>작성자 : <a href="{% url "accounts:profile" movie.author %}">{{ movie.author }}</a></p>
+      <p>영화제목 : <a href="{% url "movies:detail" movie.pk %}">{{ movie.title }}</a></p>
+      <form action="{% url "movies:likes" movie.pk %}" method="POST">
+        {% csrf_token %}
+        {% if request.user in movie.like_users.all %}
+          <input type="submit" value="좋아요 취소">
+        {% else %}
+          <input type="submit" value="좋아요">
+        {% endif %}
+      </form>
+      <hr>
+    {% endfor %}
+  {% endif %}
+  {% endblock content %}
+</body>
+</html>

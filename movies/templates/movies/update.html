@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  {% block content %}
+  <div>
+    <h2>영화 수정 페이지</h2>
+    <form action="{% url "movies:update" movie.pk %}" method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="게시글 수정">
+    </form>
+  </div>
+  {% endblock content %}
+</body>
+</html>

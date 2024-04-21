@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  {% block content %}
+  <div>
+    <h2>{{ person.username }}님의 프로필</h2>
+    {% if request.user != person %}
+      <div>
+        <form action="{% url "accounts:follow" person.pk %}" method="POST">
+          {% csrf_token %}
+          {% if request.user in person.followers.all %}
+            <input type="submit" value="Unfollow">
+          {% else %}
+            <input type="submit", value="Follow">
+          {% endif %}
+        </form>
+      </div>
+    {% endif %}
+    <div>회원번호: {{ person.pk }}</div>
+    <div>유저이름: {{ person.username }}</div>
+    <div>가입날짜: {{ person.date_joined }}</div>
+    {% if request.user == person %}
+      <form action="{% url "accounts:delete" person.pk %}" method="POST">
+        {% csrf_token %}
+        <input type="submit" value="회원탈퇴">
+      </form>
+    {% endif %}
+    <hr>
+    <h2>{{ person.username }}가 작성한 영화</h2>
+      {% for movie in person.movie_set.all %}
+        <div>
+          <div>글번호: {{ movie.pk }}</div>
+          <div>글제목: <a href="{% url "movies:detail" movie.pk %}">{{ movie.title }}</a></div>
+          <br>
+        </div>
+      {% endfor %}
+    <hr>
+    <h2>{{ person.username }}가 작성한 댓글</h2>
+        {% for comment in person.comment_set.all %}
+          <div>{{ comment.content }}</div>
+        {% endfor %}
+    <hr>
+    <h2>팔로워</h2>
+        {% for follower in person.followers.all %}
+          <div>{{ follower.username }}</div>
+        {% endfor %}
+  </div>
+  {% endblock content %}
+</body>
+</html>

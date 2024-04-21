@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  {% block content %}
+  <h2>메인 페이지</h2>
+  <p>영화번호 : {{ movie.id }}</p>  
+  <p>작성자 : {{ movie.author }}</p>
+  <p>영화제목 : {{ movie.title }}</p>
+  <p>영화내용 : {{ movie.description }}</p>
+  <p>작성날짜 : {{ movie.created_at }}</p>
+  <p>수정날짜 : {{ movie.updated_at }}</p>
+  <p>좋아요 개수 : {{ movie.like_users.all|length }}</p>
+  {% if request.user == movie.author %}
+    <form action="{% url "movies:update" movie.pk %}" method="POST">
+      {% csrf_token %}
+      <input type="submit" value="게시글 수정">
+    </form>
+  {% endif %}
+  <hr>
+  {% if user.is_authenticated %}
+    <form action="{% url "movies:comments_create" movie.pk %}" method="POST">
+      {% csrf_token %}
+      {{ comment_form.as_p }}
+      <input type="submit" value="작성하기">
+    </form>
+  {% else %}
+    <div>댓글을 작성하시려면 로그인을 해주세요</div>
+  {% endif %}
+  <hr>
+  {% if comments|length == 0 %}
+    댓글이 없습니다.
+  {% else %}
+    {% for comment in comments %}
+      <div>
+        <span>{{ comment.author }} : {{ comment.content }}</span>
+        <form action="{% url "movies:comments_delete" movie.pk comment.pk %}" method="POST">
+          {% csrf_token %}
+          <input type="submit" value="댓글 삭제">
+        </form>
+      </div>
+    {% endfor %}
+  {% endif %}
+  
+  {% endblock content %}
+</body>
+</html>
